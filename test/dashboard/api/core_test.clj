@@ -3,13 +3,15 @@
 
   (:use [ring.mock.request :only [request header]]
         [compojure.core :only [ANY]]
-        [midje.sweet :only [facts]]
+        [midje.sweet]
         [dashboard.api.checkers]))
 
-(facts "about a simple GET"
-  (let [handler (ANY "/" [] dashboard.api.core/current-time)
-        response (handler (request :get "/"))]
-    response => OK
-    response => (body "Hello World!")
-    response => (content-type "text/plain;charset=UTF-8")
-    ))
+
+(facts "listing log items"
+       (let [handler (ANY "/" [] dashboard.api.core/log-items)
+             response (handler (request :get "/"))]
+         response => OK
+         response => (body "{}")
+         response => (content-type "application/json;charset=UTF-8"))
+       (against-background
+         (sdb/query-all anything anything) => {}))
